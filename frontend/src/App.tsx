@@ -6,7 +6,6 @@ import CreateCreaturePage from './pages/CreatureFormPage';
 
 function App() {
   const isAuthenticated = !!localStorage.getItem('token');
-
   return (
     <Router>
       <Routes>
