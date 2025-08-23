@@ -221,7 +221,7 @@ NODE_ENV=development
 MONGODB_URI=mongodb://localhost:27017/bestiario-digital
 # Para MongoDB Atlas: mongodb+srv://usuario:senha@cluster.mongodb.net/bestiario-digital
 
-# Chave secreta para JWT (gere uma chave forte)
+# Chave secreta para JWT 
 JWT_SECRET=seu-jwt-secret-super-seguro-aqui-com-pelo-menos-32-caracteres
 
 # Tempo de expiração do token
@@ -247,27 +247,12 @@ touch .env.local
 nano .env.local
 \`\`\`
 
-**Variáveis de Ambiente (.env.local):**
-\`\`\`env
+
 # URL da API backend
 NEXT_PUBLIC_API_URL=http://localhost:5000/api
 \`\`\`
 
 ### 4. Configuração do MongoDB
-
-#### Opção A: MongoDB Local
-\`\`\`bash
-# Instalar MongoDB (Ubuntu/Debian)
-sudo apt update
-sudo apt install mongodb
-
-# Iniciar o serviço
-sudo systemctl start mongodb
-sudo systemctl enable mongodb
-
-# Verificar se está rodando
-sudo systemctl status mongodb
-\`\`\`
 
 #### Opção B: MongoDB Atlas (Recomendado para produção)
 1. Acesse [MongoDB Atlas](https://www.mongodb.com/atlas)
