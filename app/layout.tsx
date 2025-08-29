@@ -18,7 +18,7 @@ const dmSans = DM_Sans({
 
 export const metadata: Metadata = {
   title: "Bestiário Digital",
-  description: "Catálogo interativo de criaturas de RPG",
+  description: "Catálogo interativo de RPG",
 }
 
 export default function RootLayout({
