@@ -28,7 +28,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" className={`${cinzel.variable} ${dmSans.variable} antialiased`}>
-      <body className="font-sans">{children}</body>
+      <head />
+      <body className="font-sans" suppressHydrationWarning>
+        {children}
+      </body>
     </html>
   )
 }

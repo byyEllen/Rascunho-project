@@ -21,6 +21,14 @@ import {
   Heart,
 } from "lucide-react"
 
+interface Creature {
+  id: number;
+  name: string;
+  description: string;
+  image?: string;
+  // outros campos...
+}
+
 const creatures = [
   // D&D 5e - Raças
   {
@@ -778,33 +786,24 @@ const categories = [
 ]
 
 export default function BestiarioDigital() {
-  const [selectedCreature, setSelectedCreature] = useState(null)
+  const [creatures, setCreatures] = useState<Creature[]>([]);
+  const [favorites, setFavorites] = useState<number[]>([]);
+  const [selectedCreature, setSelectedCreature] = useState<Creature | null>(null);
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedSystem, setSelectedSystem] = useState("all")
   const [selectedCategory, setSelectedCategory] = useState("all")
   const [showProfile, setShowProfile] = useState(false)
   const [showPdfManager, setShowPdfManager] = useState(false)
   const [showFavorites, setShowFavorites] = useState(false)
-  const [favorites, setFavorites] = useState([])
-  const [characterSheets, setCharacterSheets] = useState({
-    dnd5e: [],
-    tormenta20: [],
-    vampiro: [],
-  })
-  const [systemPdfs, setSystemPdfs] = useState({
-    dnd5e: [],
-    tormenta20: [],
-    vampiro: [],
-  })
 
   useEffect(() => {
-    const savedFavorites = localStorage.getItem("bestiario-favorites")
-    if (savedFavorites) {
-      setFavorites(JSON.parse(savedFavorites))
+    const storedFavorites = localStorage.getItem("favorites");
+    if (storedFavorites) {
+      setFavorites(JSON.parse(storedFavorites));
     }
   }, [])
 
-  const toggleFavorite = (creatureId) => {
+  const toggleFavorite = (creatureId: number) => {
     const newFavorites = favorites.includes(creatureId)
       ? favorites.filter((id) => id !== creatureId)
       : [...favorites, creatureId]
@@ -813,9 +812,9 @@ export default function BestiarioDigital() {
     localStorage.setItem("bestiario-favorites", JSON.stringify(newFavorites))
   }
 
-  const handleCharacterSheetUpload = (systemId, event) => {
-    const files = Array.from(event.target.files)
-    const newSheets = files.map((file) => ({
+  const handleCharacterSheetUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    const newSheets = Array.from(files).map((file) => ({
       id: Date.now() + Math.random(),
       name: file.name,
       size: file.size,
@@ -829,18 +828,16 @@ export default function BestiarioDigital() {
     }))
   }
 
-  const handleCharacterSheetDownload = (sheet) => {
-    if (sheet.file) {
-      const url = URL.createObjectURL(sheet.file)
-      const a = document.createElement("a")
-      a.href = url
-      a.download = sheet.name
-      document.body.appendChild(a)
-      a.click()
-      document.body.removeChild(a)
-      URL.revokeObjectURL(url)
-    }
-  }
+  const handleDownload = (file: File) => {
+    const url = URL.createObjectURL(file);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = file.name;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
 
   const handleCharacterSheetRemove = (systemId, sheetId) => {
     setCharacterSheets((prev) => ({
@@ -1110,7 +1107,7 @@ export default function BestiarioDigital() {
                               type="file"
                               multiple
                               accept=".pdf"
-                              onChange={(e) => handleCharacterSheetUpload(system.id, e)}
+                              onChange={(e) => handleCharacterSheetUpload(e)}
                               className="hidden"
                             />
                             <Button variant="outline" className="flex items-center gap-2 bg-transparent">
