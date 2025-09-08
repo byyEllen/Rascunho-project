@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import Input from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -26,11 +26,19 @@ interface Creature {
   name: string;
   description: string;
   image?: string;
-  // outros campos...
+  system: string;
+  category: string;
+  type: string;
+  habitat: string;
+  stats?: {
+    strength: number;
+    speed: number;
+    magic: number;
+    intelligence: number;
+  };
 }
 
 const creatures = [
-  // D&D 5e - Raças
   {
     id: 1,
     name: "Anão das Montanhas",
@@ -795,6 +803,16 @@ export default function BestiarioDigital() {
   const [showProfile, setShowProfile] = useState(false)
   const [showPdfManager, setShowPdfManager] = useState(false)
   const [showFavorites, setShowFavorites] = useState(false)
+  const [characterSheets, setCharacterSheets] = useState<{ [systemId: string]: any[] }>({
+    dnd5e: [],
+    tormenta20: [],
+    vampiro: [],
+  });
+  const [systemPdfs, setSystemPdfs] = useState<{ [systemId: string]: any[] }>({
+    dnd5e: [],
+    tormenta20: [],
+    vampiro: [],
+  });
 
   useEffect(() => {
     const storedFavorites = localStorage.getItem("favorites");
@@ -812,20 +830,21 @@ export default function BestiarioDigital() {
     localStorage.setItem("bestiario-favorites", JSON.stringify(newFavorites))
   }
 
-  const handleCharacterSheetUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCharacterSheetUpload = (systemId: string, event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
+    if (!files) return;
     const newSheets = Array.from(files).map((file) => ({
       id: Date.now() + Math.random(),
       name: file.name,
       size: file.size,
       uploadDate: new Date().toLocaleDateString(),
       file: file,
-    }))
+    }));
 
-    setCharacterSheets((prev) => ({
+    setCharacterSheets((prev: { [systemId: string]: any[] }) => ({
       ...prev,
-      [systemId]: [...prev[systemId], ...newSheets],
-    }))
+      [systemId]: [...(prev[systemId] || []), ...newSheets],
+    }));
   }
 
   const handleDownload = (file: File) => {
@@ -839,7 +858,7 @@ export default function BestiarioDigital() {
     URL.revokeObjectURL(url);
   };
 
-  const handleCharacterSheetRemove = (systemId, sheetId) => {
+  const handleCharacterSheetRemove = (systemId: string, sheetId: number) => {
     setCharacterSheets((prev) => ({
       ...prev,
       [systemId]: prev[systemId].filter((sheet) => sheet.id !== sheetId),
@@ -855,23 +874,24 @@ export default function BestiarioDigital() {
 
   const favoriteCreatures = creatures.filter((creature) => favorites.includes(creature.id))
 
-  const handlePdfUpload = (systemId, event) => {
-    const files = Array.from(event.target.files)
-    const newPdfs = files.map((file) => ({
+  const handlePdfUpload = (systemId: string, event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files) return;
+    const newPdfs = Array.from(files).map((file) => ({
       id: Date.now() + Math.random(),
       name: file.name,
       size: file.size,
       uploadDate: new Date().toLocaleDateString(),
       file: file,
-    }))
+    }));
 
-    setSystemPdfs((prev) => ({
+    setSystemPdfs((prev: { [systemId: string]: any[] }) => ({
       ...prev,
-      [systemId]: [...prev[systemId], ...newPdfs],
-    }))
+      [systemId]: [...(prev[systemId] || []), ...newPdfs],
+    }));
   }
 
-  const handlePdfDownload = (pdf) => {
+  const handlePdfDownload = (pdf: any) => {
     if (pdf.file) {
       const url = URL.createObjectURL(pdf.file)
       const a = document.createElement("a")
@@ -884,12 +904,25 @@ export default function BestiarioDigital() {
     }
   }
 
-  const handlePdfRemove = (systemId, pdfId) => {
+  const handlePdfRemove = (systemId: string, pdfId: number) => {
     setSystemPdfs((prev) => ({
       ...prev,
       [systemId]: prev[systemId].filter((pdf) => pdf.id !== pdfId),
     }))
   }
+
+  const handleCharacterSheetDownload = (sheet: any) => {
+    if (sheet.file) {
+      const url = URL.createObjectURL(sheet.file);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = sheet.name;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+  };
 
   if (showFavorites) {
     return (
@@ -1107,7 +1140,7 @@ export default function BestiarioDigital() {
                               type="file"
                               multiple
                               accept=".pdf"
-                              onChange={(e) => handleCharacterSheetUpload(e)}
+                              onChange={(e) => handleCharacterSheetUpload(system.id, e)}
                               className="hidden"
                             />
                             <Button variant="outline" className="flex items-center gap-2 bg-transparent">
