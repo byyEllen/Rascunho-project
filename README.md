@@ -1,15 +1,15 @@
-# 🐉 Bestiário Digital
+# Bestiário Digital
 
-Uma aplicação **full-stack** moderna e elegante para catalogar criaturas, raças, itens e magias de sistemas de RPG. Interface imersiva com tema gótico em preto e vermelho, combinando elementos medievais fantásticos com design moderno.
+Uma aplicação full-stack moderna e elegante para catalogar criaturas, raças, itens e magias de sistemas de RPG. Interface imersiva com tema gótico em preto e vermelho, combinando elementos medievais fantásticos com design moderno.
 
-## ✨ Funcionalidades
+##  Funcionalidades
 
-### 🎮 Sistemas RPG Suportados
+###  Sistemas RPG Suportados
 - **Dungeons & Dragons (D&D 5e)**
 - **Tormenta20 (T20)**
 - **Vampiro: A Máscara**
 
-### 🔍 Navegação e Filtros
+###  Navegação e Filtros
 - Seletor de sistema RPG no header
 - Filtros por categoria na sidebar:
   - Monstros
@@ -19,36 +19,35 @@ Uma aplicação **full-stack** moderna e elegante para catalogar criaturas, raç
 - Barra de pesquisa global
 - Contador de itens por categoria
 
-### ❤️ Sistema de Favoritos
+### Sistema de Favoritos
 - Marcar qualquer item como favorito
 - Visualizar todos os favoritos em seção dedicada
 - Persistência local (localStorage)
 - Contador de favoritos no header
 
-### 📚 Gerenciamento de PDFs
+### Gerenciamento de PDFs
 - **Livros de Regras**: Upload de PDFs dos sistemas
 - **Fichas de Personagem**: Upload de fichas específicas por sistema
 - Download e remoção de arquivos
 - Organização por sistema RPG
 
-### 🔐 Autenticação e Perfil
-- Sistema de registro e login com JWT
+### Autenticação e Perfil
 - Perfil personalizado do usuário
 - Sistema preferido salvo
 - Favoritos sincronizados com o servidor
 
-### 🎨 Interface
+### Interface
 - Tema gótico com paleta preta e vermelha
 - Cards com efeitos hover e animações suaves
 - Design responsivo
 - Scrollbar personalizada
 - Tipografia medieval (Cinzel) para títulos
 
-## 🐲 Conteúdo por Sistema
+##  Conteúdo por Sistema
 
 ### Dungeons & Dragons (D&D 5e)
 
-#### 🧙‍♂️ Raças (9)
+####  Raças (9)
 - Anão das Montanhas
 - Elfo Alto
 - Halfling Pés Peludos
@@ -59,7 +58,7 @@ Uma aplicação **full-stack** moderna e elegante para catalogar criaturas, raç
 - Meio-Orc Bárbaro
 - Tiefling Infernal
 
-#### 👹 Monstros (35) - Organizados por Categoria
+#### Monstros (35) - Organizados por Categoria
 
 **Bestas e Animais**
 - Lobo Cinzento, Urso Pardo, Leão Majestoso, Águia Dourada, Tubarão Branco
@@ -87,7 +86,7 @@ Uma aplicação **full-stack** moderna e elegante para catalogar criaturas, raç
 
 ### Tormenta20 (T20)
 
-#### 🧙‍♂️ Raças (9)
+####  Raças (9)
 - Humano de Arton
 - Anão de Doherimm
 - Elfo de Lenórienn
@@ -105,7 +104,7 @@ Uma aplicação **full-stack** moderna e elegante para catalogar criaturas, raç
 
 ### Vampiro: A Máscara
 
-#### 🧛‍♂️ Clãs Vampíricos (7)
+#### Clãs Vampíricos (7)
 - Brujah Rebelde
 - Gangrel Selvagem
 - Malkavian Louco
@@ -186,133 +185,6 @@ bestiario-digital/
 │   └── tsconfig.json
 └── README.md                   # Esta documentação
 \`\`\`
-
-## 🚀 Instalação e Configuração
-
-### Pré-requisitos
-- **Node.js**: ^20.11.0
-- **MongoDB**: ^6.0 (local ou MongoDB Atlas)
-- **npm** ou **yarn**
-
-### 1. Clone o Repositório
-\`\`\`bash
-git clone <repository-url>
-cd bestiario-digital
-\`\`\`
-
-### 2. Configuração do Backend
-
-\`\`\`bash
-# Navegar para o diretório backend
-cd backend
-
-# Instalar dependências
-npm install
-
-**Variáveis de Ambiente (backend/.env):**
-\`\`\`env
-# Porta do servidor
-PORT=5000
-
-# Ambiente de execução
-NODE_ENV=development
-
-# URL de conexão com MongoDB
-MONGODB_URI=mongodb://localhost:27017/bestiario-digital
-# Para MongoDB Atlas: mongodb+srv://usuario:senha@cluster.mongodb.net/bestiario-digital
-
-# Chave secreta para JWT 
-JWT_SECRET=seu-jwt-secret-super-seguro-aqui-com-pelo-menos-32-caracteres
-
-# Tempo de expiração do token
-JWT_EXPIRES_IN=7d
-
-# URL do frontend para CORS
-FRONTEND_URL=http://localhost:3000
-\`\`\`
-
-### 3. Configuração do Frontend
-
-\`\`\`bash
-# Voltar para a raiz do projeto
-cd ../
-
-# Instalar dependências do frontend
-npm install
-
-# Criar arquivo de variáveis de ambiente do frontend
-touch .env.local
-
-# Editar o arquivo .env.local
-nano .env.local
-\`\`\`
-
-
-# URL da API backend
-NEXT_PUBLIC_API_URL=http://localhost:5000/api
-\`\`\`
-
-### 4. Configuração do MongoDB
-
-#### Opção B: MongoDB Atlas (Recomendado para produção)
-1. Acesse [MongoDB Atlas](https://www.mongodb.com/atlas)
-2. Crie uma conta gratuita
-3. Crie um cluster
-4. Configure o acesso de rede (adicione seu IP)
-5. Crie um usuário de banco de dados
-6. Copie a string de conexão e cole no `MONGODB_URI`
-
-### 5. Executar a Aplicação
-
-#### Terminal 1 - Backend:
-\`\`\`bash
-cd backend
-
-# Executar em modo desenvolvimento (com hot reload)
-npm run dev
-
-# Ou executar em modo produção
-npm run build
-npm start
-\`\`\`
-
-**Saída esperada:**
-\`\`\`
-✅ MongoDB conectado com sucesso
-🚀 Servidor rodando na porta 5000
-📚 API disponível em http://localhost:5000/api
-\`\`\`
-
-#### Terminal 2 - Frontend:
-\`\`\`bash
-# Na raiz do projeto
-npm run dev
-
-# Ou para produção
-npm run build
-npm start
-\`\`\`
-
-**Saída esperada:**
-\`\`\`
-▲ Next.js 14.0.0
-- Local:        http://localhost:3000
-- Network:      http://192.168.1.100:3000
-
-✓ Ready in 2.3s
-\`\`\`
-
-### 6. Verificar Instalação
-
-1. **Backend**: Acesse http://localhost:5000/api/health
-   - Deve retornar: `{"status":"OK","timestamp":"..."}`
-
-2. **Frontend**: Acesse http://localhost:3000
-   - Deve carregar a interface do Bestiário Digital
-
-3. **Banco de Dados**: Verifique se o MongoDB está conectado nos logs do backend
-
-## 🔗 API Endpoints
 
 ### Autenticação
 - `POST /api/auth/register` - Registrar usuário
@@ -493,7 +365,3 @@ npm run dev
 # MongoDB logs (local)
 sudo journalctl -u mongodb
 \`\`\`
-
----
-
-*Desenvolvido com ❤️ para mestres e jogadores de RPG*

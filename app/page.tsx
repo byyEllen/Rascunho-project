@@ -20,6 +20,7 @@ import {
   Download,
   Heart,
 } from "lucide-react"
+import { getDatabase } from "../database";
 
 interface Creature {
   id: number;
@@ -1542,3 +1543,13 @@ export default function BestiarioDigital() {
     </div>
   )
 }
+
+// Rascunho-project/app/page.tsx
+async function listarMonstros() {
+  const db = await getDatabase();
+  const monstros = db.collection("monstros");
+  const todos = await monstros.find().toArray();
+  console.log(todos);
+}
+
+listarMonstros();

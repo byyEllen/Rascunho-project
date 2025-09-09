@@ -1,28 +1,39 @@
 import type { Request, Response } from "express"
-import jwt from "jsonwebtoken"
-import User from "../models/User"
+import jwt, { Secret, SignOptions } from "jsonwebtoken"
+import User, { IUser } from "../models/User"
 
-const JWT_SECRET = process.env.JWT_SECRET || "seu-jwt-secret-super-seguro"
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "7d"
+interface JwtPayload {
+  userId: string
+}
 
-// Generate JWT token
+declare module "express-serve-static-core" {
+  interface Request {
+    user?: JwtPayload
+  }
+}
+
+const JWT_SECRET: Secret = process.env.JWT_SECRET || "seu-jwt-secret-super-seguro"
+// força o tipo para o que o SignOptions espera
+const JWT_EXPIRES_IN = (process.env.JWT_EXPIRES_IN || "7d") as SignOptions["expiresIn"]
+
 const generateToken = (userId: string): string => {
   return jwt.sign({ userId }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN })
 }
 
+// -------------------- Controllers --------------------
+
 // Register user
-export const register = async (req: Request, res: Response) => {
+export const register = async (req: Request, res: Response): Promise<void> => {
   try {
     const { nome, email, senha, sistemaPreferido } = req.body
 
-    // Check if user already exists
     const existingUser = await User.findOne({ email })
     if (existingUser) {
-      return res.status(400).json({ message: "Usuário já existe com este email" })
+      res.status(400).json({ message: "Usuário já existe com este email" })
+      return
     }
 
-    // Create new user
-    const user = new User({
+    const user: IUser = new User({
       nome,
       email,
       senha,
@@ -31,14 +42,13 @@ export const register = async (req: Request, res: Response) => {
 
     await user.save()
 
-    // Generate token
     const token = generateToken(user._id.toString())
 
     res.status(201).json({
       message: "Usuário criado com sucesso",
       token,
       user: {
-        id: user._id,
+        id: user._id.toString(),
         nome: user.nome,
         email: user.email,
         sistemaPreferido: user.sistemaPreferido,
@@ -52,30 +62,29 @@ export const register = async (req: Request, res: Response) => {
 }
 
 // Login user
-export const login = async (req: Request, res: Response) => {
+export const login = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, senha } = req.body
 
-    // Find user by email
-    const user = await User.findOne({ email })
+    const user = (await User.findOne({ email })) as IUser | null
     if (!user) {
-      return res.status(401).json({ message: "Credenciais inválidas" })
+      res.status(401).json({ message: "Credenciais inválidas" })
+      return
     }
 
-    // Check password
     const isPasswordValid = await user.comparePassword(senha)
     if (!isPasswordValid) {
-      return res.status(401).json({ message: "Credenciais inválidas" })
+      res.status(401).json({ message: "Credenciais inválidas" })
+      return
     }
 
-    // Generate token
     const token = generateToken(user._id.toString())
 
     res.json({
       message: "Login realizado com sucesso",
       token,
       user: {
-        id: user._id,
+        id: user._id.toString(),
         nome: user.nome,
         email: user.email,
         sistemaPreferido: user.sistemaPreferido,
@@ -89,11 +98,17 @@ export const login = async (req: Request, res: Response) => {
 }
 
 // Get current user
-export const getMe = async (req: Request, res: Response) => {
+export const getMe = async (req: Request, res: Response): Promise<void> => {
   try {
-    const user = await User.findById(req.user?.userId).select("-senha")
+    if (!req.user?.userId) {
+      res.status(401).json({ message: "Não autorizado" })
+      return
+    }
+
+    const user = await User.findById(req.user.userId).select("-senha")
     if (!user) {
-      return res.status(404).json({ message: "Usuário não encontrado" })
+      res.status(404).json({ message: "Usuário não encontrado" })
+      return
     }
 
     res.json({ user })
@@ -104,10 +119,15 @@ export const getMe = async (req: Request, res: Response) => {
 }
 
 // Update user profile
-export const updateProfile = async (req: Request, res: Response) => {
+export const updateProfile = async (req: Request, res: Response): Promise<void> => {
   try {
+    if (!req.user?.userId) {
+      res.status(401).json({ message: "Não autorizado" })
+      return
+    }
+
     const { nome, sistemaPreferido, avatar } = req.body
-    const userId = req.user?.userId
+    const userId = req.user.userId
 
     const user = await User.findByIdAndUpdate(
       userId,
@@ -116,7 +136,8 @@ export const updateProfile = async (req: Request, res: Response) => {
     ).select("-senha")
 
     if (!user) {
-      return res.status(404).json({ message: "Usuário não encontrado" })
+      res.status(404).json({ message: "Usuário não encontrado" })
+      return
     }
 
     res.json({

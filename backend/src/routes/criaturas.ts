@@ -1,4 +1,5 @@
 import express from "express"
+import { getDatabase } from "./database";
 import { authenticateToken } from "../middlewares/auth"
 import {
   getCriaturas,
